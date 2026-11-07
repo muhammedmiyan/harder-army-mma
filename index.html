@@ -814,7 +814,6 @@ const remaining = Math.max(0, total - completed);
 document.getElementById('og-kalan').innerText = remaining;
 document.getElementById('og-toplam').innerText = total;
 
-// 2 ve altı seans uyarısı / Borç Uyarısı
 const uyariKutusu = document.getElementById('ogrenci-uyari-kutusu');
 const uyariMetni = document.getElementById('ogrenci-uyari-metni');
 const borcTutar = Number(currentLoggedInUye.borc_tutar) || 0;
@@ -1013,19 +1012,14 @@ let telClean = u.telefon ? u.telefon.replace(/\D/g, '') : '';
 if (telClean.startsWith('0')) telClean = '9' + telClean;
 else if (!telClean.startsWith('90') && telClean.length === 10) telClean = '90' + telClean;
 
-// Profesyonel WhatsApp Şablonları
 const waGenel = encodeURIComponent(`Harder Army MMA: Osu! Merhaba ${u.ad_soyad}, ${u.paket} seans ve üyelik durumunuz hakkında bilgi vermek istedik. Salonumuza bekleriz! 🥋`);
-const waPaketBitiyor = encodeURIComponent(`Harder Army MMA: Osu! Merhaba ${u.ad_soyad}, üyelik bitiş tarihin yaklaşmaktadır (${u.bitis_tarihi || 'yakında'}). Paketini yenilemek için salonumuza bekleriz! 🥋`);
 const waSeansBitiyor = encodeURIComponent(`Harder Army MMA: Osu! Merhaba ${u.ad_soyad}, paketindeki derslerin tamamlanmak üzere (Kalan: ${remaining} seans). Yeni dönem kaydın için görüşelim! 🥋`);
-
-const borcTutar = Number(u.borc_tutar) || 0;
-const waBorc = encodeURIComponent(`Harder Army MMA: Osu! Merhaba ${u.ad_soyad}, salon üyeliğine ait ₺${borcTutar.toLocaleString('tr-TR')} kalan aidat/bakiye ödemen bulunmaktadır. Detaylı bilgi için salonumuza ulaşabilirsin. 🥋`);
+const waBorc = encodeURIComponent(`Harder Army MMA: Osu! Merhaba ${u.ad_soyad}, salon üyeliğine ait ₺${(Number(u.borc_tutar) || 0).toLocaleString('tr-TR')} kalan aidat/bakiye ödemen bulunmaktadır. Detaylı bilgi için salonumuza ulaşabilirsin. 🥋`);
 
 let aktifWaMsg = waGenel;
-if (borcTutar > 0) aktifWaMsg = waBorc;
+if ((Number(u.borc_tutar) || 0) > 0) aktifWaMsg = waBorc;
 else if (remaining <= 2) aktifWaMsg = waSeansBitiyor;
 
-// 2 ve altı seans uyarısı rozeti
 const remainingBadge = remaining <= 2
 ? `<span class="bg-red-950 text-red-400 border border-red-800 text-[10px] px-1.5 py-0.5 rounded ml-1 font-bold animate-pulse">Son ${remaining}!</span>`
 : '';
@@ -1038,7 +1032,7 @@ ${escapeHtml(u.telefon || '-')}
 ${telClean ? `
 <div class="flex flex-wrap gap-1 mt-1">
 <a href="https://wa.me/${telClean}?text=${aktifWaMsg}" target="_blank" class="bg-zinc-800 hover:bg-zinc-700 text-green-400 px-2 py-0.5 rounded text-[10px] font-bold border border-zinc-700" title="Genel Mesaj"><i class="fa-brands fa-whatsapp mr-1"></i>WhatsApp</a>
-${borcTutar > 0 ? `<a href="https://wa.me/${telClean}?text=${waBorc}" target="_blank" class="bg-red-950 hover:bg-red-900 text-red-400 px-2 py-0.5 rounded text-[10px] font-bold border border-red-800" title="Borç Hatırlat">Borç</a>` : ''}
+${(Number(u.borc_tutar) || 0) > 0 ? `<a href="https://wa.me/${telClean}?text=${waBorc}" target="_blank" class="bg-red-950 hover:bg-red-900 text-red-400 px-2 py-0.5 rounded text-[10px] font-bold border border-red-800" title="Borç Hatırlat">Borç</a>` : ''}
 </div>` : ''}
 </td>
 <td class="p-3.5"><span class="bg-zinc-800 px-2 py-1 rounded text-[11px] text-gray-300">${escapeHtml(u.paket)}</span></td>
@@ -1050,7 +1044,7 @@ ${borcTutar > 0 ? `<a href="https://wa.me/${telClean}?text=${waBorc}" target="_b
 </td>
 <td class="p-3.5 font-semibold text-green-400">
 ₺${u.ucret}
-${borcTutar > 0 ? `<div class="text-[10px] text-red-500 font-bold">Borç: ₺${borcTutar.toLocaleString('tr-TR')}</div>` : ''}
+${(Number(u.borc_tutar) || 0) > 0 ? `<div class="text-[10px] text-red-500 font-bold">Borç: ₺${Number(u.borc_tutar).toLocaleString('tr-TR')}</div>` : ''}
 </td>
 <td class="p-3.5 text-gray-400">${escapeHtml(u.bitis_tarihi || '-')}</td>
 <td class="p-3.5"><span class="px-2 py-0.5 rounded border text-[10px] font-bold ${badgeClass}">${escapeHtml(u.durum)}</span></td>
@@ -1110,11 +1104,9 @@ const borcTutar = Number(u.borc_tutar) > 0 ? Number(u.borc_tutar) : Number(u.ucr
 
 if (!confirm(`"${u.ad_soyad}" isimli üyeden ₺${borcTutar.toLocaleString('tr-TR')} borç tahsil edilerek kasaya işlensin mi?`)) return;
 
-// Borcu sıfırla ve durumu güncelle
 const { error: err1 } = await supabaseClient.from('uyeler').update({ borc_tutar: 0, durum: 'Aktif' }).eq('id', id);
 if (err1) { alert('Hata: ' + err1.message); return; }
 
-// Kasaya Gelir Ekle
 await supabaseClient.from('kasa_hareketleri').insert([{
 tip: 'Gelir',
 baslik: `Aidat Tahsilatı: ${u.ad_soyad}`,
@@ -1200,6 +1192,7 @@ if (id) {
 response = await supabaseClient.from('uyeler').update(payload).eq('id', id);
 } else {
 payload.baslangic_tarihi = localDateISO();
+payload.session_dates = JSON.stringify([]);
 response = await supabaseClient.from('uyeler').insert([payload]);
 if (!response.error && borcTutar === 0) {
 await supabaseClient.from('kasa_hareketleri').insert([{
@@ -1302,7 +1295,6 @@ renderKasaAySecenekleri();
 renderKasaAy();
 hesaplaAylikKarsilastirma();
 
-// Tüm zamanlar genel toplam
 let totalGelir = 0;
 let totalGider = 0;
 allKasa.forEach(k => {
@@ -1357,7 +1349,7 @@ const bugun = localDateISO();
 const bugunHareketler = allKasa.filter(k => String(k.tarih || '').startsWith(bugun));
 
 if (bugunHareketler.length === 0) {
-alert('Bugüne ait henüz hiçbir kasa hareketi yok.');
+alert('Bugüne ait hiçbir kasa hareketi yok.');
 return;
 }
 
@@ -1365,11 +1357,7 @@ const gunlukGelir = bugunHareketler.filter(k => k.tip === 'Gelir').reduce((a, b)
 const gunlukGider = bugunHareketler.filter(k => k.tip === 'Gider').reduce((a, b) => a + Number(b.tutar), 0);
 const gunlukNet = gunlukGelir - gunlukGider;
 
-const onay = confirm(`--- GÜNLÜK KASA KAPANIS ÖZETİ (${bugun}) ---\n\nToplam Günlük Gelir: ₺${gunlukGelir.toLocaleString('tr-TR')}\nToplam Günlük Gider: ₺${gunlukGider.toLocaleString('tr-TR')}\nGünlük Net Bakiye: ₺${gunlukNet.toLocaleString('tr-TR')}\n\nKasa Kapanışı Onaylansın mı?`);
-
-if (onay) {
-alert(`Günlük Kasa Kapanışı Tamamlandı! Günlük Net Devir: ₺${gunlukNet.toLocaleString('tr-TR')}. Osu! 🥋`);
-}
+alert(`--- GÜNLÜK KASA KAPANIS ÖZETİ (${bugun}) ---\n\nToplam Günlük Gelir: ₺${gunlukGelir.toLocaleString('tr-TR')}\nToplam Günlük Gider: ₺${gunlukGider.toLocaleString('tr-TR')}\nGünlük Net Bakiye: ₺${gunlukNet.toLocaleString('tr-TR')}\n\nKasa Kapanışı Onaylandı. Osu! 🥋`);
 }
 
 function renderKasaAySecenekleri() {
@@ -1459,10 +1447,8 @@ await supabaseClient.from('kasa_hareketleri').delete().eq('id', id);
 loadData();
 }
 
-// --- EXCEL DIŞA AKTARMA (CSV MANTIGI) ---
 function exportUyelerExcel() {
 if (allUyeler.length === 0) { alert('Aktarılacak üye verisi bulunamadı.'); return; }
-
 let csvContent = "\uFEFFAd Soyad;Telefon;Paket;Ucret;Borc Tutar;Kalan Seans;Bitis Tarihi;Durum\n";
 allUyeler.forEach(u => {
 const total = u.total_lessons || 12;
@@ -1470,21 +1456,17 @@ let sessionDates = [];
 try { sessionDates = typeof u.session_dates === 'string' ? JSON.parse(u.session_dates) : (u.session_dates || []); } catch(e) { sessionDates = []; }
 const completed = sessionDates.filter(d => d !== null && d !== undefined && d !== '').length;
 const remaining = Math.max(0, total - completed);
-
 csvContent += `"${u.ad_soyad || ''}";"${u.telefon || ''}";"${u.paket || ''}";"${u.ucret || 0}";"${u.borc_tutar || 0}";"${remaining}";"${u.bitis_tarihi || ''}";"${u.durum || ''}"\n`;
 });
-
 downloadCSV(csvContent, `harder_army_uyeler_${localDateISO()}.csv`);
 }
 
 function exportKasaExcel() {
 if (allKasa.length === 0) { alert('Aktarılacak kasa verisi bulunamadı.'); return; }
-
 let csvContent = "\uFEFFTarih;Islem Turu;Baslik;Kategori;Tutar\n";
 allKasa.forEach(k => {
 csvContent += `"${k.tarih || ''}";"${k.tip || ''}";"${k.baslik || ''}";"${k.kategori || ''}";"${k.tutar || 0}"\n`;
 });
-
 downloadCSV(csvContent, `harder_army_kasa_${localDateISO()}.csv`);
 }
 
