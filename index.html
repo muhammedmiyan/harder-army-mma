@@ -19,7 +19,7 @@
 
 <!-- Header / Navbar -->
 <header class="bg-zinc-950 border-b border-red-900/40 p-4 sticky top-0 z-50 shadow-lg">
-<div class="max-w-5xl mx-auto flex justify-between items-center">
+<div class="max-w-6xl mx-auto flex justify-between items-center">
 <div class="flex items-center gap-3.5">
 <div class="relative w-11 h-11 rounded-xl border border-red-600/40 flex items-center justify-center shadow-xl shadow-red-950/30 overflow-hidden group">
 <img src="harder-army-icon.jpg" alt="Harder Army MMA" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
@@ -40,7 +40,7 @@
 </div>
 </header>
 
-<div class="max-w-5xl mx-auto p-4 space-y-6">
+<div class="max-w-6xl mx-auto p-4 space-y-6">
 
 <!-- Supabase Bağlantı Ayar Alanı -->
 <div id="setup-box" class="bg-zinc-900 border border-red-900/60 p-4 rounded-xl hidden shadow-xl">
@@ -58,35 +58,42 @@
 <!-- ANA GÖRÜNÜM 1: YÖNETİM PANELİ -->
 <div id="view-yonetim" class="space-y-6">
 <!-- İstatistik Özet Kartları -->
-<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="grid grid-cols-2 md:grid-cols-5 gap-3">
 <div class="bg-zinc-900 border border-zinc-800/80 p-3.5 rounded-xl">
 <p class="text-gray-400 text-[11px] font-medium">Aktif Sporcu</p>
 <p id="stat-aktif" class="text-2xl font-black text-white mt-1">0</p>
 </div>
 <div class="bg-zinc-900 border border-zinc-800/80 p-3.5 rounded-xl">
-<p class="text-gray-400 text-[11px] font-medium">Bitişi Yaklaşan</p>
-<p id="stat-biten" class="text-2xl font-black text-yellow-500 mt-1">0</p>
+<p class="text-gray-400 text-[11px] font-medium">Dersi Azalan (≤2)</p>
+<p id="stat-azalan" class="text-2xl font-black text-orange-400 mt-1">0</p>
 </div>
 <div class="bg-zinc-900 border border-zinc-800/80 p-3.5 rounded-xl">
-<p class="text-gray-400 text-[11px] font-medium">Kasa Bakiyesi (Seçilen Ay)</p>
+<p class="text-gray-400 text-[11px] font-medium">Borçlu Üye</p>
+<p id="stat-borclu" class="text-2xl font-black text-red-500 mt-1">0</p>
+</div>
+<div class="bg-zinc-900 border border-zinc-800/80 p-3.5 rounded-xl">
+<p class="text-gray-400 text-[11px] font-medium">Kasa Bakiyesi (Bu Ay)</p>
 <p id="stat-kasa" class="text-2xl font-black text-green-500 mt-1">₺0</p>
 </div>
 <div class="bg-zinc-900 border border-zinc-800/80 p-3.5 rounded-xl">
-<p class="text-gray-400 text-[11px] font-medium">Malzeme Kasası (Seçilen Ay)</p>
-<p id="stat-malzeme-kasa" class="text-2xl font-black text-cyan-400 mt-1">₺0</p>
+<p class="text-gray-400 text-[11px] font-medium">Toplam Kayıt</p>
+<p id="stat-toplam" class="text-2xl font-black text-gray-300 mt-1">0</p>
 </div>
 </div>
 
 <!-- Sekme Butonları -->
-<div class="flex bg-zinc-900 p-1 rounded-xl border border-zinc-800 text-xs font-bold">
-<button onclick="switchTab('uyeler')" id="tab-uyeler" class="flex-1 py-2.5 rounded-lg bg-red-600 text-white transition">
+<div class="flex flex-wrap bg-zinc-900 p-1 rounded-xl border border-zinc-800 text-xs font-bold gap-1">
+<button onclick="switchTab('uyeler')" id="tab-uyeler" class="flex-1 py-2.5 px-3 rounded-lg bg-red-600 text-white transition">
 <i class="fa-solid fa-users mr-1.5"></i> Üyeler & Seans Takibi
 </button>
-<button onclick="switchTab('stok')" id="tab-stok" class="flex-1 py-2.5 rounded-lg text-gray-400 hover:text-white transition">
-<i class="fa-solid fa-boxes-stacked mr-1.5"></i> Ekipman & Malzeme Kasası
+<button onclick="switchTab('borclular')" id="tab-borclular" class="flex-1 py-2.5 px-3 rounded-lg text-gray-400 hover:text-white transition">
+<i class="fa-solid fa-circle-exclamation mr-1.5 text-red-500"></i> Borçlu Üyeler & Aidat
 </button>
-<button onclick="switchTab('kasa')" id="tab-kasa" class="flex-1 py-2.5 rounded-lg text-gray-400 hover:text-white transition">
-<i class="fa-solid fa-wallet mr-1.5"></i> Ana Kasa / Arşiv & Raporlar
+<button onclick="switchTab('stok')" id="tab-stok" class="flex-1 py-2.5 px-3 rounded-lg text-gray-400 hover:text-white transition">
+<i class="fa-solid fa-box-archive mr-1.5"></i> Stok / Ekipman Satış
+</button>
+<button onclick="switchTab('kasa')" id="tab-kasa" class="flex-1 py-2.5 px-3 rounded-lg text-gray-400 hover:text-white transition">
+<i class="fa-solid fa-wallet mr-1.5"></i> Kasa / Gelir-Gider
 </button>
 </div>
 
@@ -94,8 +101,11 @@
 <div id="sec-uyeler" class="space-y-4">
 <div class="flex flex-col sm:flex-row justify-between gap-3">
 <input type="text" id="uye-ara" oninput="filterUyeler()" placeholder="Sporcu Ara (Ad, Telefon)..." class="bg-zinc-900 border border-zinc-800 p-3 rounded-xl text-xs text-white outline-none focus:border-red-600 flex-1">
-<div class="flex gap-2">
-<button onclick="openQrModal()" class="bg-zinc-800 hover:bg-zinc-700 text-yellow-400 text-xs font-bold px-4 py-3 rounded-xl flex items-center justify-center gap-2 border border-zinc-700 transition">
+<div class="flex flex-wrap gap-2">
+<button onclick="exportUyelerExcel()" class="bg-zinc-800 hover:bg-zinc-700 text-green-400 text-xs font-bold px-3 py-3 rounded-xl flex items-center justify-center gap-1.5 border border-zinc-700 transition">
+<i class="fa-solid fa-file-excel"></i> Excel İndir
+</button>
+<button onclick="openQrModal()" class="bg-zinc-800 hover:bg-zinc-700 text-yellow-400 text-xs font-bold px-3 py-3 rounded-xl flex items-center justify-center gap-1.5 border border-zinc-700 transition">
 <i class="fa-solid fa-qrcode"></i> Salon QR Kodu
 </button>
 <button onclick="openUyeModal()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-3 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-red-950/40 transition">
@@ -113,7 +123,7 @@
 <th class="p-3.5">İletişim & WhatsApp</th>
 <th class="p-3.5">Branş / Paket</th>
 <th class="p-3.5">Seans Takibi</th>
-<th class="p-3.5">Ücret</th>
+<th class="p-3.5">Ücret / Bakiye</th>
 <th class="p-3.5">Bitiş Tarihi</th>
 <th class="p-3.5">Durum</th>
 <th class="p-3.5 text-right">İşlem</th>
@@ -127,12 +137,48 @@
 </div>
 </div>
 
-<!-- SEKME 2: EKİPMAN & MALZEME KASASI -->
-<div id="sec-stok" class="space-y-4 hidden">
-<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-zinc-900 p-4 rounded-xl border border-zinc-800">
+<!-- SEKME 2: BORÇLU ÜYELER VE OTOMATİK AİDAT TAKİBİ -->
+<div id="sec-borclular" class="space-y-4 hidden">
+<div class="flex justify-between items-center bg-zinc-900 border border-red-900/40 p-4 rounded-xl">
 <div>
-<h2 class="text-sm font-bold text-cyan-400"><i class="fa-solid fa-box-archive mr-1.5"></i> Malzeme & Ekipman Kasası / Stok Takibi</h2>
-<p class="text-[11px] text-gray-400 mt-0.5">Satılan her ürün otomatik olarak Malzeme Kasası gelirlerine işlenir ve stoktan düşer.</p>
+<h2 class="text-sm font-bold text-red-500 flex items-center gap-2">
+<i class="fa-solid fa-circle-exclamation"></i> Gecikmiş Aidat ve Kalan Borç Takibi
+</h2>
+<p class="text-[11px] text-gray-400 mt-0.5">Ödeme yapmamış veya üyelik süresi geçip ödemesi alınmamış sporcular otomatik listelenir.</p>
+</div>
+<button onclick="topluBorcUyarisiGonder()" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-1.5 transition">
+<i class="fa-brands fa-whatsapp"></i> WhatsApp Hatırlatma Bilgisi
+</button>
+</div>
+
+<div class="bg-zinc-900 rounded-xl border border-zinc-800/80 overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left text-xs text-gray-300">
+<thead class="bg-zinc-950 text-gray-400 font-semibold border-b border-zinc-800">
+<tr>
+<th class="p-3.5">Sporcu</th>
+<th class="p-3.5">Telefon</th>
+<th class="p-3.5">Branş</th>
+<th class="p-3.5">Kalan Borç Tutar</th>
+<th class="p-3.5">Son Ödeme / Bitiş Tarihi</th>
+<th class="p-3.5">Gecikme Durumu</th>
+<th class="p-3.5 text-right">Hızlı Tahsilat / WhatsApp</th>
+</tr>
+</thead>
+<tbody id="borclu-listesi" class="divide-y divide-zinc-800/50">
+<tr><td colspan="7" class="p-8 text-center text-gray-500">Yükleniyor...</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<!-- SEKME 3: STOK / EKİPMAN SATIŞ MODÜLÜ -->
+<div id="sec-stok" class="space-y-4 hidden">
+<div class="flex justify-between items-center">
+<div>
+<h2 class="text-sm font-bold text-gray-300">Salon Ekipman ve Ürün Stok Takibi</h2>
+<p class="text-[11px] text-gray-500 mt-0.5">Satış yaptığınızda ürün stoktan otomatik düşer ve kasaya gelir olarak işlenir.</p>
 </div>
 <button onclick="openStokModal()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2 transition shadow-lg">
 <i class="fa-solid fa-plus"></i> Yeni Ürün Ekle
@@ -145,10 +191,10 @@
 <thead class="bg-zinc-950 text-gray-400 font-semibold border-b border-zinc-800">
 <tr>
 <th class="p-3.5">Ürün Adı</th>
-<th class="p-3.5">Fiyat</th>
-<th class="p-3.5">Mevcut Stok</th>
-<th class="p-3.5">Toplam Satılan</th>
-<th class="p-3.5 text-right">Hızlı Satış & İşlem</th>
+<th class="p-3.5">Kategori</th>
+<th class="p-3.5">Satış Fiyatı</th>
+<th class="p-3.5">Stok Adedi</th>
+<th class="p-3.5 text-right">Hızlı İşlem</th>
 </tr>
 </thead>
 <tbody id="stok-listesi" class="divide-y divide-zinc-800/50">
@@ -159,16 +205,43 @@
 </div>
 </div>
 
-<!-- SEKME 3: KASA / FİNANSAL RAPORLAR & ARŞİV -->
+<!-- SEKME 4: KASA / FİNANSAL RAPORLAR & AYLIK KARŞILAŞTIRMA -->
 <div id="sec-kasa" class="space-y-6 hidden">
-<div class="flex justify-between items-center">
-<h2 class="text-sm font-bold text-gray-300">Ana Kasa / Aylık Arşiv & Finansal Raporlar</h2>
+<div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+<div>
+<h2 class="text-sm font-bold text-gray-300">Kasa / Gelir-Gider & Günlük Kapanış</h2>
+<p class="text-[11px] text-gray-500 mt-0.5">Günlük kasa kapanışınızı yapın ve geçen ay ile gelir karşılaştırmanızı görün.</p>
+</div>
+<div class="flex flex-wrap gap-2">
+<button onclick="gunlukKasaKapanisiYap()" class="bg-yellow-600 hover:bg-yellow-700 text-black text-xs font-bold px-3 py-2.5 rounded-xl flex items-center gap-1.5 transition shadow-lg">
+<i class="fa-solid fa-lock"></i> Günlük Kasa Kapanışı Al
+</button>
+<button onclick="exportKasaExcel()" class="bg-zinc-800 hover:bg-zinc-700 text-green-400 text-xs font-bold px-3 py-2.5 rounded-xl flex items-center gap-1.5 border border-zinc-700 transition">
+<i class="fa-solid fa-file-excel"></i> Raporu Excel İndir
+</button>
 <button onclick="openKasaModal()" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2 transition shadow-lg shadow-green-950/40">
 <i class="fa-solid fa-plus"></i> Gelir / Gider Ekle
 </button>
 </div>
+</div>
 
-<!-- TÜM ZAMANLAR GENEL TOPLAM KARTLARI -->
+<!-- AYLIK GELİR KARŞILAŞTIRMA KARTI -->
+<div class="bg-zinc-900 border border-zinc-800/90 rounded-2xl p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="bg-black/50 p-3 rounded-xl border border-zinc-800">
+<p class="text-gray-400 text-[10px] uppercase font-bold tracking-wider">Bu Ay Kasa Net</p>
+<p id="kasa-bu-ay-net" class="text-xl font-black text-white mt-1">₺0</p>
+</div>
+<div class="bg-black/50 p-3 rounded-xl border border-zinc-800">
+<p class="text-gray-400 text-[10px] uppercase font-bold tracking-wider">Geçen Ay Kasa Net</p>
+<p id="kasa-gecen-ay-net" class="text-xl font-black text-gray-400 mt-1">₺0</p>
+</div>
+<div class="bg-black/50 p-3 rounded-xl border border-zinc-800 flex flex-col justify-center">
+<p class="text-gray-400 text-[10px] uppercase font-bold tracking-wider">Aylık Değişim Oranı</p>
+<div id="kasa-degisim-orani" class="text-lg font-black mt-0.5 text-gray-300">%0</div>
+</div>
+</div>
+
+<!-- TÜM ZAMANLAR ÖZET KARTLARI -->
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
 <div class="bg-zinc-900 border border-zinc-800/80 p-4 rounded-xl">
 <p class="text-gray-400 text-[11px] font-medium">Tüm Zamanlar Toplam Gelir</p>
@@ -184,12 +257,12 @@
 </div>
 </div>
 
-<!-- KATEGORİ DAĞILIMI & AYLIK ARŞİV FİLTRESİ -->
+<!-- KATEGORİ DAĞILIMI & FİLTRELEME PANELİ -->
 <div class="bg-zinc-900 border border-zinc-800/80 rounded-xl p-4 space-y-4">
 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-zinc-800 pb-3">
 <div>
-<p class="text-xs font-bold text-gray-200">Aylık Arşiv ve Kategori Filtresi</p>
-<p class="text-[11px] text-gray-500 mt-0.5">Geçmiş ayları seçerek o aya ait tüm arşiv kayıtlarını ve kasa özetini inceleyin.</p>
+<p class="text-xs font-bold text-gray-200">Aylık ve Kategori Arşivi</p>
+<p class="text-[11px] text-gray-500 mt-0.5">Seçilen aya ve türe göre gelir/gider dağılımını inceleyin.</p>
 </div>
 <div class="flex items-center gap-2">
 <select id="kasa-filtre-tur" onchange="renderKasaAy()" class="bg-black border border-zinc-700 p-2 rounded-lg text-xs text-white outline-none focus:border-green-600">
@@ -257,6 +330,12 @@ Giriş Yap & Seanslarımı Gör
 
 <!-- Öğrenci Profil Bilgi ve Seans Sonuç Alanı -->
 <div id="ogrenci-detay-alani" class="hidden space-y-4 max-w-2xl mx-auto">
+
+<!-- DERS HAKKI VE BORÇ UYARI KARTI -->
+<div id="ogrenci-uyari-kutusu" class="hidden bg-yellow-950/60 border border-yellow-600/60 rounded-xl p-3 text-xs text-yellow-300 flex items-center justify-between">
+<span id="ogrenci-uyari-metni"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Paketinizde az sayıda seans hakkı kaldı!</span>
+</div>
+
 <div class="bg-zinc-900 border border-zinc-800 p-5 rounded-2xl shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
 <div>
 <span id="og-brans-badge" class="bg-red-600/20 text-red-500 border border-red-900/50 px-2.5 py-1 rounded-full text-[10px] font-bold">Branş</span>
@@ -294,24 +373,23 @@ Giriş Yap & Seanslarımı Gör
 <div id="stok-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
 <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-2xl p-5 space-y-4 shadow-2xl">
 <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
-<h3 class="text-base font-bold text-red-500">Yeni Malzeme / Ürün Ekle</h3>
+<h3 class="text-base font-bold text-red-500">Yeni Ürün / Ekipman Ekle</h3>
 <button onclick="closeStokModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
 </div>
 <form id="stok-form" onsubmit="saveStok(event)" class="space-y-3 text-xs">
 <div>
-<label class="block text-gray-400 mb-1">Ürün Seçimi / Adı *</label>
-<select id="s-ad-select" onchange="stokSecimDegisti()" class="w-full bg-black border border-zinc-800 p-2.5 rounded-lg text-white outline-none focus:border-red-600 mb-2">
-<option value="Rashguard">Rashguard</option>
-<option value="Tişört">Tişört</option>
-<option value="Dişlik">Dişlik</option>
-<option value="Bandaj">Bandaj</option>
-<option value="Kaval koruyucu">Kaval koruyucu</option>
-<option value="Eldiven boks">Eldiven boks</option>
-<option value="Eldiven mma">Eldiven mma</option>
-<option value="Kask">Kask</option>
-<option value="Ozel">-- Özel Başlık Yaz --</option>
+<label class="block text-gray-400 mb-1">Ürün Adı *</label>
+<input type="text" id="s-ad" placeholder="Örn: Harder Army Rashguard" required class="w-full bg-black border border-zinc-800 p-2.5 rounded-lg text-white outline-none focus:border-red-600">
+</div>
+<div>
+<label class="block text-gray-400 mb-1">Kategori *</label>
+<select id="s-kategori" class="w-full bg-black border border-zinc-800 p-2.5 rounded-lg text-white outline-none focus:border-red-600">
+<option value="Tekstil (Rashguard/Tişört)">Tekstil (Rashguard / Tişört)</option>
+<option value="Koruma (Dişlik/Bandaj/Kaval)">Koruma (Dişlik / Bandaj / Kaval)</option>
+<option value="Eldiven">Eldiven & Ekipman</option>
+<option value="İçecek / Supplement">İçecek / Supplement</option>
+<option value="Diğer">Diğer</option>
 </select>
-<input type="text" id="s-ad" placeholder="Örn: Harder Army Rashguard" required class="w-full bg-black border border-zinc-800 p-2.5 rounded-lg text-white outline-none focus:border-red-600 hidden">
 </div>
 <div class="grid grid-cols-2 gap-2">
 <div>
@@ -319,7 +397,7 @@ Giriş Yap & Seanslarımı Gör
 <input type="number" id="s-fiyat" placeholder="750" required class="w-full bg-black border border-zinc-800 p-2.5 rounded-lg text-white outline-none focus:border-red-600">
 </div>
 <div>
-<label class="block text-gray-400 mb-1">Mevcut Stok Adedi *</label>
+<label class="block text-gray-400 mb-1">Stok Adedi *</label>
 <input type="number" id="s-adet" placeholder="10" required class="w-full bg-black border border-zinc-800 p-2.5 rounded-lg text-white outline-none focus:border-red-600">
 </div>
 </div>
@@ -390,17 +468,23 @@ Giriş Yap & Seanslarımı Gör
 </div>
 <div class="grid grid-cols-2 gap-2">
 <div>
-<label class="block text-gray-400 mb-1">Aylık Ücret (₺) *</label>
+<label class="block text-gray-400 mb-1">Aylık Paket Ücreti (₺) *</label>
 <input type="number" id="m-ucret" required placeholder="1500" class="w-full bg-black border border-zinc-800 p-2.5 rounded-lg text-white outline-none focus:border-red-600">
 </div>
+<div>
+<label class="block text-gray-400 mb-1">Kalan Borç Tutar (₺)</label>
+<input type="number" id="m-borc" placeholder="0" class="w-full bg-black border border-zinc-800 p-2.5 rounded-lg text-white outline-none focus:border-red-600">
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2">
 <div>
 <label class="block text-gray-400 mb-1">Toplam Ders Sayısı</label>
 <input type="number" id="m-toplam-ders" value="12" class="w-full bg-black border border-zinc-800 p-2.5 rounded-lg text-white outline-none focus:border-red-600">
 </div>
-</div>
 <div>
 <label class="block text-gray-400 mb-1">Üyelik Bitiş Tarihi *</label>
 <input type="date" id="m-bitis" required class="w-full bg-black border border-zinc-800 p-2.5 rounded-lg text-white outline-none focus:border-red-600">
+</div>
 </div>
 <div>
 <label class="block text-gray-400 mb-1">Durum *</label>
@@ -547,17 +631,6 @@ let checkInInProgress = false;
 let attendanceQrScanner = null;
 let attendanceScanBusy = false;
 
-const DEFAULT_STOK = [
-{ id: 'stok_1', urun_adi: 'Rashguard', satis_fiyati: 850, adet: 10, satilan_adet: 0 },
-{ id: 'stok_2', urun_adi: 'Tişört', satis_fiyati: 450, adet: 15, satilan_adet: 0 },
-{ id: 'stok_3', urun_adi: 'Dişlik', satis_fiyati: 200, adet: 20, satilan_adet: 0 },
-{ id: 'stok_4', urun_adi: 'Bandaj', satis_fiyati: 250, adet: 25, satilan_adet: 0 },
-{ id: 'stok_5', urun_adi: 'Kaval koruyucu', satis_fiyati: 1200, adet: 8, satilan_adet: 0 },
-{ id: 'stok_6', urun_adi: 'Eldiven boks', satis_fiyati: 1400, adet: 6, satilan_adet: 0 },
-{ id: 'stok_7', urun_adi: 'Eldiven mma', satis_fiyati: 1300, adet: 6, satilan_adet: 0 },
-{ id: 'stok_8', urun_adi: 'Kask', satis_fiyati: 1500, adet: 4, satilan_adet: 0 }
-];
-
 function escapeHtml(value) {
 return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 }
@@ -636,28 +709,37 @@ btnOg.setAttribute('onclick', "switchMainView('ogrenci')");
 
 function switchTab(tab) {
 const secUyeler = document.getElementById('sec-uyeler');
+const secBorclular = document.getElementById('sec-borclular');
 const secStok = document.getElementById('sec-stok');
 const secKasa = document.getElementById('sec-kasa');
+
 const tabUyeler = document.getElementById('tab-uyeler');
+const tabBorclular = document.getElementById('tab-borclular');
 const tabStok = document.getElementById('tab-stok');
 const tabKasa = document.getElementById('tab-kasa');
 
 secUyeler.classList.add('hidden');
+secBorclular.classList.add('hidden');
 secStok.classList.add('hidden');
 secKasa.classList.add('hidden');
-tabUyeler.className = "flex-1 py-2.5 rounded-lg text-gray-400 hover:text-white transition";
-tabStok.className = "flex-1 py-2.5 rounded-lg text-gray-400 hover:text-white transition";
-tabKasa.className = "flex-1 py-2.5 rounded-lg text-gray-400 hover:text-white transition";
+
+tabUyeler.className = "flex-1 py-2.5 px-3 rounded-lg text-gray-400 hover:text-white transition";
+tabBorclular.className = "flex-1 py-2.5 px-3 rounded-lg text-gray-400 hover:text-white transition";
+tabStok.className = "flex-1 py-2.5 px-3 rounded-lg text-gray-400 hover:text-white transition";
+tabKasa.className = "flex-1 py-2.5 px-3 rounded-lg text-gray-400 hover:text-white transition";
 
 if (tab === 'uyeler') {
 secUyeler.classList.remove('hidden');
-tabUyeler.className = "flex-1 py-2.5 rounded-lg bg-red-600 text-white transition";
+tabUyeler.className = "flex-1 py-2.5 px-3 rounded-lg bg-red-600 text-white transition";
+} else if (tab === 'borclular') {
+secBorclular.classList.remove('hidden');
+tabBorclular.className = "flex-1 py-2.5 px-3 rounded-lg bg-red-600 text-white transition";
 } else if (tab === 'stok') {
 secStok.classList.remove('hidden');
-tabStok.className = "flex-1 py-2.5 rounded-lg bg-red-600 text-white transition";
+tabStok.className = "flex-1 py-2.5 px-3 rounded-lg bg-red-600 text-white transition";
 } else {
 secKasa.classList.remove('hidden');
-tabKasa.className = "flex-1 py-2.5 rounded-lg bg-green-600 text-white transition";
+tabKasa.className = "flex-1 py-2.5 px-3 rounded-lg bg-green-600 text-white transition";
 }
 }
 
@@ -688,7 +770,7 @@ const temizTel = normalizePhone(tel);
 if (!temizTel) { alert('Lütfen telefon numaranızı girin!'); return; }
 
 if (uyeLoadError) {
-alert('Üye kayıtları yüklenemedi: ' + uyeLoadError.message);
+alert('Üye kayıtları veritabanından yüklenemedi: ' + uyeLoadError.message);
 return;
 }
 const ogrenci = allUyeler.find(u => normalizePhone(u.telefon) === temizTel);
@@ -731,6 +813,26 @@ const remaining = Math.max(0, total - completed);
 
 document.getElementById('og-kalan').innerText = remaining;
 document.getElementById('og-toplam').innerText = total;
+
+// 2 ve altı seans uyarısı / Borç Uyarısı
+const uyariKutusu = document.getElementById('ogrenci-uyari-kutusu');
+const uyariMetni = document.getElementById('ogrenci-uyari-metni');
+const borcTutar = Number(currentLoggedInUye.borc_tutar) || 0;
+
+if (remaining <= 2 || borcTutar > 0) {
+uyariKutusu.classList.remove('hidden');
+let mesaj = '';
+if (borcTutar > 0 && remaining <= 2) {
+mesaj = `<i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Paketinizde son <strong>${remaining} ders</strong> kaldı ve <strong>₺${borcTutar.toLocaleString('tr-TR')}</strong> ödemeniz bulunmaktadır.`;
+} else if (remaining <= 2) {
+mesaj = `<i class="fa-solid fa-clock mr-1.5"></i> Paketiniz bitiyor! Kalan ders sayınız: <strong>${remaining}</strong>. Yeni dönem kaydınızı yenilemeyi unutmayın!`;
+} else {
+mesaj = `<i class="fa-solid fa-wallet mr-1.5"></i> Kalan aidat / bakiye borcunuz: <strong>₺${borcTutar.toLocaleString('tr-TR')}</strong>. Danışmaya ödeme yapabilirsiniz.`;
+}
+uyariMetni.innerHTML = mesaj;
+} else {
+uyariKutusu.classList.add('hidden');
+}
 
 const listContainer = document.getElementById('ogrenci-seans-listesi');
 listContainer.innerHTML = '';
@@ -859,20 +961,36 @@ document.getElementById('sozlesme-modal').classList.add('hidden');
 showOgrenciPanel();
 }
 
-// --- ÜYELER VE AKILLI WHATSAPP ---
+// --- ÜYELER & BORÇ / UYARI YÖNETİMİ ---
 async function loadUyeler() {
-try {
 const { data: uyeler, error } = await supabaseClient.from('uyeler').select('*').order('created_at', { ascending: false });
-if (error) { uyeLoadError = error; console.error("Üyeler yüklenemedi:", error.message); return; }
+if (error) { console.error("Üyeler yüklenemedi:", error.message); return; }
 allUyeler = uyeler || [];
-renderUyeler(allUyeler);
 
+renderUyeler(allUyeler);
+renderBorclular(allUyeler);
+
+const bugun = localDateISO();
+let azalanSayisi = 0;
+let borcluSayisi = 0;
+
+allUyeler.forEach(u => {
+const total = u.total_lessons || 12;
+let sessionDates = [];
+try { sessionDates = typeof u.session_dates === 'string' ? JSON.parse(u.session_dates) : (u.session_dates || []); } catch(e) { sessionDates = []; }
+const completed = sessionDates.filter(d => d !== null && d !== undefined && d !== '').length;
+const remaining = Math.max(0, total - completed);
+
+if (remaining <= 2) azalanSayisi++;
+const borc = Number(u.borc_tutar) || 0;
+const bitisGecmis = u.bitis_tarihi && u.bitis_tarihi < bugun;
+if (borc > 0 || bitisGecmis) borcluSayisi++;
+});
+
+document.getElementById('stat-toplam').innerText = allUyeler.length;
 document.getElementById('stat-aktif').innerText = allUyeler.filter(u => u.durum === 'Aktif').length;
-document.getElementById('stat-biten').innerText = allUyeler.filter(u => u.durum === 'Bitişi Yaklaşan').length;
-} catch (err) {
-uyeLoadError = err;
-console.error("Üyeler yüklemeexception:", err);
-}
+document.getElementById('stat-azalan').innerText = azalanSayisi;
+document.getElementById('stat-borclu').innerText = borcluSayisi;
 }
 
 function renderUyeler(list) {
@@ -895,9 +1013,22 @@ let telClean = u.telefon ? u.telefon.replace(/\D/g, '') : '';
 if (telClean.startsWith('0')) telClean = '9' + telClean;
 else if (!telClean.startsWith('90') && telClean.length === 10) telClean = '90' + telClean;
 
+// Profesyonel WhatsApp Şablonları
 const waGenel = encodeURIComponent(`Harder Army MMA: Osu! Merhaba ${u.ad_soyad}, ${u.paket} seans ve üyelik durumunuz hakkında bilgi vermek istedik. Salonumuza bekleriz! 🥋`);
 const waPaketBitiyor = encodeURIComponent(`Harder Army MMA: Osu! Merhaba ${u.ad_soyad}, üyelik bitiş tarihin yaklaşmaktadır (${u.bitis_tarihi || 'yakında'}). Paketini yenilemek için salonumuza bekleriz! 🥋`);
-const waSeansBitiyor = encodeURIComponent(`Harder Army MMA: Osu! Merhaba ${u.ad_soyad}, seanslarında sona yaklaştın (Kalan: ${remaining} ders). Bilgin olsun! 🥋`);
+const waSeansBitiyor = encodeURIComponent(`Harder Army MMA: Osu! Merhaba ${u.ad_soyad}, paketindeki derslerin tamamlanmak üzere (Kalan: ${remaining} seans). Yeni dönem kaydın için görüşelim! 🥋`);
+
+const borcTutar = Number(u.borc_tutar) || 0;
+const waBorc = encodeURIComponent(`Harder Army MMA: Osu! Merhaba ${u.ad_soyad}, salon üyeliğine ait ₺${borcTutar.toLocaleString('tr-TR')} kalan aidat/bakiye ödemen bulunmaktadır. Detaylı bilgi için salonumuza ulaşabilirsin. 🥋`);
+
+let aktifWaMsg = waGenel;
+if (borcTutar > 0) aktifWaMsg = waBorc;
+else if (remaining <= 2) aktifWaMsg = waSeansBitiyor;
+
+// 2 ve altı seans uyarısı rozeti
+const remainingBadge = remaining <= 2
+? `<span class="bg-red-950 text-red-400 border border-red-800 text-[10px] px-1.5 py-0.5 rounded ml-1 font-bold animate-pulse">Son ${remaining}!</span>`
+: '';
 
 tbody.innerHTML += `
 <tr class="hover:bg-zinc-800/40 transition">
@@ -905,19 +1036,22 @@ tbody.innerHTML += `
 <td class="p-3.5 text-gray-400">
 ${escapeHtml(u.telefon || '-')}
 ${telClean ? `
-<div class="flex gap-1.5 mt-1">
-<a href="https://wa.me/${telClean}?text=${waGenel}" target="_blank" class="bg-zinc-800 hover:bg-zinc-700 text-green-400 px-2 py-0.5 rounded text-[10px] font-bold border border-zinc-700" title="Genel Mesaj"><i class="fa-brands fa-whatsapp mr-1"></i>Mesaj</a>
-<a href="https://wa.me/${telClean}?text=${waPaketBitiyor}" target="_blank" class="bg-zinc-800 hover:bg-zinc-700 text-yellow-400 px-2 py-0.5 rounded text-[10px] font-bold border border-zinc-700" title="Yenileme Hatırlatması">Hatırlat</a>
+<div class="flex flex-wrap gap-1 mt-1">
+<a href="https://wa.me/${telClean}?text=${aktifWaMsg}" target="_blank" class="bg-zinc-800 hover:bg-zinc-700 text-green-400 px-2 py-0.5 rounded text-[10px] font-bold border border-zinc-700" title="Genel Mesaj"><i class="fa-brands fa-whatsapp mr-1"></i>WhatsApp</a>
+${borcTutar > 0 ? `<a href="https://wa.me/${telClean}?text=${waBorc}" target="_blank" class="bg-red-950 hover:bg-red-900 text-red-400 px-2 py-0.5 rounded text-[10px] font-bold border border-red-800" title="Borç Hatırlat">Borç</a>` : ''}
 </div>` : ''}
 </td>
 <td class="p-3.5"><span class="bg-zinc-800 px-2 py-1 rounded text-[11px] text-gray-300">${escapeHtml(u.paket)}</span></td>
 <td class="p-3.5">
-<div class="flex items-center gap-2">
-<span class="text-gray-300">Yapılan: <strong class="text-red-500">${completed}</strong> / Kalan: <strong class="text-green-500">${remaining}</strong></span>
+<div class="flex items-center gap-1.5">
+<span class="text-gray-300">Yapılan: <strong class="text-red-500">${completed}</strong> / Kalan: <strong class="text-green-500">${remaining}</strong> ${remainingBadge}</span>
 <button onclick="openSeansModal('${u.id}')" class="bg-zinc-800 hover:bg-zinc-700 text-yellow-400 px-2 py-1 rounded text-[10px] font-bold border border-zinc-700 transition"><i class="fa-solid fa-calendar-check mr-1"></i> Seanslar</button>
 </div>
 </td>
-<td class="p-3.5 font-semibold text-green-400">₺${u.ucret}</td>
+<td class="p-3.5 font-semibold text-green-400">
+₺${u.ucret}
+${borcTutar > 0 ? `<div class="text-[10px] text-red-500 font-bold">Borç: ₺${borcTutar.toLocaleString('tr-TR')}</div>` : ''}
+</td>
 <td class="p-3.5 text-gray-400">${escapeHtml(u.bitis_tarihi || '-')}</td>
 <td class="p-3.5"><span class="px-2 py-0.5 rounded border text-[10px] font-bold ${badgeClass}">${escapeHtml(u.durum)}</span></td>
 <td class="p-3.5 text-right space-x-1">
@@ -927,6 +1061,77 @@ ${telClean ? `
 </tr>
 `;
 });
+}
+
+function renderBorclular(list) {
+const tbody = document.getElementById('borclu-listesi');
+tbody.innerHTML = '';
+
+const bugun = localDateISO();
+const borclular = list.filter(u => (Number(u.borc_tutar) > 0) || (u.bitis_tarihi && u.bitis_tarihi < bugun));
+
+if (borclular.length === 0) {
+tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-gray-500">Tebrikler! Borçlu veya gecikmiş aidatı olan üye bulunmuyor.</td></tr>`;
+return;
+}
+
+borclular.forEach(u => {
+const borcTutar = Number(u.borc_tutar) || 0;
+const bitisGecmis = u.bitis_tarihi && u.bitis_tarihi < bugun;
+let telClean = u.telefon ? u.telefon.replace(/\D/g, '') : '';
+if (telClean.startsWith('0')) telClean = '9' + telClean;
+else if (!telClean.startsWith('90') && telClean.length === 10) telClean = '90' + telClean;
+
+const waBorcMsg = encodeURIComponent(`Harder Army MMA: Osu! Merhaba ${u.ad_soyad}, ${u.paket} üyeliğinize ait ₺${borcTutar > 0 ? borcTutar : u.ucret} tutarındaki aidat ödemenizin vakti geçmiştir. Bilginize. 🥋`);
+
+tbody.innerHTML += `
+<tr class="hover:bg-zinc-800/40 transition">
+<td class="p-3.5 font-bold text-white">${escapeHtml(u.ad_soyad)}</td>
+<td class="p-3.5 text-gray-400">${escapeHtml(u.telefon || '-')}</td>
+<td class="p-3.5"><span class="bg-zinc-800 px-2 py-0.5 rounded text-[11px] text-gray-300">${escapeHtml(u.paket)}</span></td>
+<td class="p-3.5 font-black text-red-500 text-sm">₺${borcTutar > 0 ? borcTutar.toLocaleString('tr-TR') : u.ucret.toLocaleString('tr-TR')}</td>
+<td class="p-3.5 text-gray-400">${escapeHtml(u.bitis_tarihi || '-')}</td>
+<td class="p-3.5">
+${bitisGecmis ? '<span class="bg-red-950 text-red-400 border border-red-800 px-2 py-0.5 rounded text-[10px] font-bold">Tarihi Geçti</span>' : '<span class="bg-yellow-950 text-yellow-400 border border-yellow-800 px-2 py-0.5 rounded text-[10px] font-bold">Kalan Bakiye Borcu</span>'}
+</td>
+<td class="p-3.5 text-right space-x-2">
+<button onclick="borcTahsilEt('${u.id}')" class="bg-green-600 hover:bg-green-700 text-white px-2.5 py-1.5 rounded text-xs font-bold transition shadow"><i class="fa-solid fa-check mr-1"></i> Borcu Kapat</button>
+${telClean ? `<a href="https://wa.me/${telClean}?text=${waBorcMsg}" target="_blank" class="bg-zinc-800 hover:bg-zinc-700 text-green-400 px-2.5 py-1.5 rounded text-xs font-bold border border-zinc-700 inline-block"><i class="fa-brands fa-whatsapp mr-1"></i>Hatırlat</a>` : ''}
+</td>
+</tr>
+`;
+});
+}
+
+async function borcTahsilEt(id) {
+const u = allUyeler.find(item => item.id == id);
+if (!u) return;
+const borcTutar = Number(u.borc_tutar) > 0 ? Number(u.borc_tutar) : Number(u.ucret);
+
+if (!confirm(`"${u.ad_soyad}" isimli üyeden ₺${borcTutar.toLocaleString('tr-TR')} borç tahsil edilerek kasaya işlensin mi?`)) return;
+
+// Borcu sıfırla ve durumu güncelle
+const { error: err1 } = await supabaseClient.from('uyeler').update({ borc_tutar: 0, durum: 'Aktif' }).eq('id', id);
+if (err1) { alert('Hata: ' + err1.message); return; }
+
+// Kasaya Gelir Ekle
+await supabaseClient.from('kasa_hareketleri').insert([{
+tip: 'Gelir',
+baslik: `Aidat Tahsilatı: ${u.ad_soyad}`,
+tutar: borcTutar,
+kategori: 'Aidat',
+tarih: localDateISO()
+}]);
+
+alert('Borç tahsil edildi ve kasa gelirlerine işlendi. Osu! 🥋');
+loadData();
+}
+
+function topluBorcUyarisiGonder() {
+const bugun = localDateISO();
+const borclular = allUyeler.filter(u => (Number(u.borc_tutar) > 0) || (u.bitis_tarihi && u.bitis_tarihi < bugun));
+if (borclular.length === 0) { alert('Tebrikler, ödemesi geciken üye bulunmuyor.'); return; }
+alert(`Sistemde toplam ${borclular.length} adet gecikmiş/kalan borç kaydı var. İlgili üyenin yanındaki "Hatırlat" butonunu kullanarak doğrudan WhatsApp mesajı gönderebilirsiniz.`);
 }
 
 function filterUyeler() {
@@ -940,6 +1145,7 @@ document.getElementById('uye-id').value = '';
 document.getElementById('modal-title').innerText = 'Yeni Sporcu Kaydı';
 document.getElementById('uye-form').reset();
 document.getElementById('m-toplam-ders').value = 12;
+document.getElementById('m-borc').value = 0;
 document.getElementById('uye-modal').classList.remove('hidden');
 }
 
@@ -954,6 +1160,7 @@ document.getElementById('m-ad').value = u.ad_soyad || '';
 document.getElementById('m-tel').value = u.telefon || '';
 document.getElementById('m-paket').value = u.paket || 'MMA Group';
 document.getElementById('m-ucret').value = u.ucret || '';
+document.getElementById('m-borc').value = u.borc_tutar || 0;
 document.getElementById('m-toplam-ders').value = u.total_lessons || 12;
 document.getElementById('m-bitis').value = u.bitis_tarihi || '';
 document.getElementById('m-durum').value = u.durum || 'Aktif';
@@ -974,6 +1181,7 @@ const id = document.getElementById('uye-id').value;
 const adSoyad = document.getElementById('m-ad').value;
 const paket = document.getElementById('m-paket').value;
 const ucret = Number(document.getElementById('m-ucret').value);
+const borcTutar = Number(document.getElementById('m-borc').value) || 0;
 const lessonCount = Number(document.getElementById('m-toplam-ders').value);
 
 const payload = {
@@ -981,6 +1189,7 @@ ad_soyad: adSoyad,
 telefon: document.getElementById('m-tel').value,
 paket: paket,
 ucret: ucret,
+borc_tutar: borcTutar,
 total_lessons: lessonCount,
 bitis_tarihi: document.getElementById('m-bitis').value,
 durum: document.getElementById('m-durum').value
@@ -992,7 +1201,7 @@ response = await supabaseClient.from('uyeler').update(payload).eq('id', id);
 } else {
 payload.baslangic_tarihi = localDateISO();
 response = await supabaseClient.from('uyeler').insert([payload]);
-if (!response.error) {
+if (!response.error && borcTutar === 0) {
 await supabaseClient.from('kasa_hareketleri').insert([{
 tip: 'Gelir',
 baslik: `${adSoyad} - ${paket} Aidatı`,
@@ -1007,22 +1216,12 @@ closeUyeModal();
 loadData();
 }
 
-// --- STOK & MALZEME KASASI ---
+// --- STOK / EKİPMAN MODÜLÜ ---
 async function loadStok() {
-let loaded = false;
-if (supabaseClient) {
-try {
+if (!supabaseClient) return;
 const { data, error } = await supabaseClient.from('stok_urunler').select('*').order('created_at', { ascending: false });
-if (!error && data && data.length > 0) {
-allStok = data;
-loaded = true;
-}
-} catch(e) { loaded = false; }
-}
-if (!loaded) {
-const saved = localStorage.getItem('harder_army_stok');
-allStok = saved ? JSON.parse(saved) : DEFAULT_STOK;
-}
+if (error) { console.error("Stok yüklenemedi:", error.message); return; }
+allStok = data || [];
 renderStok(allStok);
 }
 
@@ -1034,18 +1233,14 @@ tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-500">Kay
 return;
 }
 list.forEach(item => {
-const satilan = item.satilan_adet || 0;
 tbody.innerHTML += `
 <tr class="hover:bg-zinc-800/40 transition">
-<td class="p-3.5 font-bold text-white flex items-center gap-2">
-<i class="fa-solid fa-box text-cyan-400 text-xs"></i>
-<span>${escapeHtml(item.urun_adi)}</span>
-</td>
+<td class="p-3.5 font-bold text-white">${escapeHtml(item.urun_adi)}</td>
+<td class="p-3.5 text-gray-400">${escapeHtml(item.kategori || '-')}</td>
 <td class="p-3.5 font-semibold text-green-400">₺${Number(item.satis_fiyati).toLocaleString('tr-TR')}</td>
 <td class="p-3.5"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${item.adet > 3 ? 'bg-zinc-800 text-gray-200' : 'bg-red-950 text-red-400 border border-red-800'}">${item.adet} Adet</span></td>
-<td class="p-3.5 font-bold text-yellow-500">${satilan} Adet Satıldı</td>
 <td class="p-3.5 text-right space-x-1">
-<button onclick="urunSat('${item.id}')" class="bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow"><i class="fa-solid fa-cart-shopping mr-1"></i> Sat (Malzeme Kasasına Ekle)</button>
+<button onclick="urunSat('${item.id}')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow"><i class="fa-solid fa-cart-shopping mr-1"></i> Sat (Kasaya Ekle)</button>
 <button onclick="deleteStok('${item.id}')" class="bg-red-950 hover:bg-red-900 text-red-400 p-1.5 rounded transition"><i class="fa-solid fa-trash"></i></button>
 </td>
 </tr>
@@ -1053,104 +1248,61 @@ tbody.innerHTML += `
 });
 }
 
-function openStokModal() {
-document.getElementById('s-ad-select').value = 'Rashguard';
-document.getElementById('s-ad').classList.add('hidden');
-document.getElementById('s-ad').value = 'Rashguard';
-document.getElementById('stok-modal').classList.remove('hidden');
-}
+function openStokModal() { document.getElementById('stok-modal').classList.remove('hidden'); }
 function closeStokModal() { document.getElementById('stok-modal').classList.add('hidden'); }
-
-function stokSecimDegisti() {
-const val = document.getElementById('s-ad-select').value;
-const input = document.getElementById('s-ad');
-if (val === 'Ozel') {
-input.value = '';
-input.classList.remove('hidden');
-} else {
-input.value = val;
-input.classList.add('hidden');
-}
-}
 
 async function saveStok(e) {
 e.preventDefault();
-const ad = document.getElementById('s-ad').value;
-const fiyat = Number(document.getElementById('s-fiyat').value);
-const adet = Number(document.getElementById('s-adet').value);
-
-const newItem = {
-id: 'stok_' + Date.now(),
-urun_adi: ad,
-satis_fiyati: fiyat,
-adet: adet,
-satilan_adet: 0
+const payload = {
+urun_adi: document.getElementById('s-ad').value,
+kategori: document.getElementById('s-kategori').value,
+satis_fiyati: Number(document.getElementById('s-fiyat').value),
+adet: Number(document.getElementById('s-adet').value)
 };
-
-if (supabaseClient) {
-try { await supabaseClient.from('stok_urunler').insert([{ urun_adi: ad, satis_fiyati: fiyat, adet: adet, satilan_adet: 0 }]); } catch(e){}
-}
-
-allStok.unshift(newItem);
-localStorage.setItem('harder_army_stok', JSON.stringify(allStok));
+const { error } = await supabaseClient.from('stok_urunler').insert([payload]);
+if (error) { alert('Hata: ' + error.message); return; }
 closeStokModal();
-renderStok(allStok);
+loadStok();
 }
 
 async function urunSat(id) {
 const product = allStok.find(item => item.id == id);
 if (!product) return;
 if (product.adet <= 0) { alert('Bu ürünün stoğu kalmadı!'); return; }
-if (!confirm(`"${product.urun_adi}" ürününden 1 adet satılacak (₺${product.satis_fiyati}). Malzeme kasasına işlensin mi?`)) return;
+if (!confirm(`"${product.urun_adi}" ürününden 1 adet satılacak (₺${product.satis_fiyati}). Kasa gelirine işlensin mi?`)) return;
 
-product.adet -= 1;
-product.satilan_adet = (product.satilan_adet || 0) + 1;
+const yeniAdet = product.adet - 1;
+await supabaseClient.from('stok_urunler').update({ adet: yeniAdet }).eq('id', id);
 
-if (supabaseClient) {
-try {
-await supabaseClient.from('stok_urunler').update({ adet: product.adet, satilan_adet: product.satilan_adet }).eq('id', id);
-} catch(e){}
-}
-
-localStorage.setItem('harder_army_stok', JSON.stringify(allStok));
-
-const payload = {
+await supabaseClient.from('kasa_hareketleri').insert([{
 tip: 'Gelir',
-baslik: `Malzeme Satışı: ${product.urun_adi}`,
+baslik: `Ürün Satışı: ${product.urun_adi}`,
 tutar: product.satis_fiyati,
-kategori: 'Malzeme Kasası',
+kategori: 'Malzeme / Ekipman',
 tarih: localDateISO()
-};
-await supabaseClient.from('kasa_hareketleri').insert([payload]);
+}]);
 
-alert('Ürün satışı gerçekleşti ve Malzeme Kasasına işlendi! Osu! 🥋');
+alert('Ürün satışı gerçekleştirildi ve kasaya gelir olarak işlendi! Osu! 🥋');
 loadData();
 }
 
 async function deleteStok(id) {
-if(!confirm('Bu ürünü listeden silmek istediğinize emin misiniz?')) return;
-allStok = allStok.filter(item => item.id != id);
-localStorage.setItem('harder_army_stok', JSON.stringify(allStok));
-if (supabaseClient) {
-try { await supabaseClient.from('stok_urunler').delete().eq('id', id); } catch(e){}
-}
-renderStok(allStok);
+if(!confirm('Bu ürünü silmek istediğinize emin misiniz?')) return;
+await supabaseClient.from('stok_urunler').delete().eq('id', id);
+loadStok();
 }
 
-// --- KASA & FİNANSAL RAPORLAR (ARŞİV DESTEKLİ) ---
+// --- KASA & FİNANSAL RAPORLAR, GÜNLÜK KAPANIS VE AYLIK KARŞILAŞTIRMA ---
 async function loadKasa() {
-try {
 const { data: kasa, error } = await supabaseClient.from('kasa_hareketleri').select('*').order('created_at', { ascending: false });
-if (error) {
-console.error("Kasa yüklenemedi:", error.message);
-document.getElementById('kasa-listesi').innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-400">Kasa verileri yüklenirken hata oluştu: ${escapeHtml(error.message)}</td></tr>`;
-return;
-}
+if (error) { console.error("Kasa hareketleri yüklenemedi:", error.message); return; }
 allKasa = kasa || [];
 
 renderKasaAySecenekleri();
 renderKasaAy();
+hesaplaAylikKarsilastirma();
 
+// Tüm zamanlar genel toplam
 let totalGelir = 0;
 let totalGider = 0;
 allKasa.forEach(k => {
@@ -1165,9 +1317,58 @@ document.getElementById('rapor-toplam-gider').innerText = `₺${totalGider.toLoc
 const genelNetEl = document.getElementById('rapor-net-bakiye');
 genelNetEl.innerText = `₺${genelNet.toLocaleString('tr-TR')}`;
 genelNetEl.className = `text-xl font-black mt-1 ${genelNet >= 0 ? 'text-green-400' : 'text-red-400'}`;
-} catch (err) {
-console.error("Kasa catch hatası:", err);
-document.getElementById('kasa-listesi').innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-400">Bağlantı hatası: ${escapeHtml(err.message)}</td></tr>`;
+}
+
+function hesaplaAylikKarsilastirma() {
+const simdi = new Date();
+const buAyStr = `${simdi.getFullYear()}-${String(simdi.getMonth() + 1).padStart(2, '0')}`;
+
+const gecenAyTarih = new Date(simdi.getFullYear(), simdi.getMonth() - 1, 1);
+const gecenAyStr = `${gecenAyTarih.getFullYear()}-${String(gecenAyTarih.getMonth() + 1).padStart(2, '0')}`;
+
+const buAyNet = allKasa.filter(k => String(k.tarih || '').startsWith(buAyStr))
+.reduce((acc, k) => acc + (k.tip === 'Gelir' ? Number(k.tutar) : -Number(k.tutar)), 0);
+
+const gecenAyNet = allKasa.filter(k => String(k.tarih || '').startsWith(gecenAyStr))
+.reduce((acc, k) => acc + (k.tip === 'Gelir' ? Number(k.tutar) : -Number(k.tutar)), 0);
+
+document.getElementById('kasa-bu-ay-net').innerText = `₺${buAyNet.toLocaleString('tr-TR')}`;
+document.getElementById('kasa-gecen-ay-net').innerText = `₺${gecenAyNet.toLocaleString('tr-TR')}`;
+
+const degisimEl = document.getElementById('kasa-degisim-orani');
+if (gecenAyNet === 0) {
+degisimEl.innerText = buAyNet > 0 ? '+%100 (Yeni Dönem)' : '%0';
+degisimEl.className = 'text-lg font-black mt-0.5 text-green-400';
+} else {
+const fark = buAyNet - gecenAyNet;
+const oran = Math.round((fark / Math.abs(gecenAyNet)) * 100);
+if (oran >= 0) {
+degisimEl.innerText = `+%${oran} (Artış)`;
+degisimEl.className = 'text-lg font-black mt-0.5 text-green-400';
+} else {
+degisimEl.innerText = `%${oran} (Düşüş)`;
+degisimEl.className = 'text-lg font-black mt-0.5 text-red-500';
+}
+}
+}
+
+async function gunlukKasaKapanisiYap() {
+const bugun = localDateISO();
+const bugunHareketler = allKasa.filter(k => String(k.tarih || '').startsWith(bugun));
+
+if (bugunHareketler.length === 0) {
+alert('Bugüne ait henüz hiçbir kasa hareketi yok.');
+return;
+}
+
+const gunlukGelir = bugunHareketler.filter(k => k.tip === 'Gelir').reduce((a, b) => a + Number(b.tutar), 0);
+const gunlukGider = bugunHareketler.filter(k => k.tip === 'Gider').reduce((a, b) => a + Number(b.tutar), 0);
+const gunlukNet = gunlukGelir - gunlukGider;
+
+const onay = confirm(`--- GÜNLÜK KASA KAPANIS ÖZETİ (${bugun}) ---\n\nToplam Günlük Gelir: ₺${gunlukGelir.toLocaleString('tr-TR')}\nToplam Günlük Gider: ₺${gunlukGider.toLocaleString('tr-TR')}\nGünlük Net Bakiye: ₺${gunlukNet.toLocaleString('tr-TR')}\n\nKasa Kapanışı Onaylansın mı?`);
+
+if (onay) {
+alert(`Günlük Kasa Kapanışı Tamamlandı! Günlük Net Devir: ₺${gunlukNet.toLocaleString('tr-TR')}. Osu! 🥋`);
 }
 }
 
@@ -1199,12 +1400,8 @@ const income = monthAll.filter(item => item.tip === 'Gelir').reduce((sum, item) 
 const expense = monthAll.filter(item => item.tip === 'Gider').reduce((sum, item) => sum + (Number(item.tutar) || 0), 0);
 const ayNetBakiye = income - expense;
 
-const malzemeGelir = monthAll.filter(item => item.kategori === 'Malzeme Kasası' && item.tip === 'Gelir').reduce((sum, item) => sum + (Number(item.tutar) || 0), 0);
-
 document.getElementById('stat-kasa').innerText = `₺${ayNetBakiye.toLocaleString('tr-TR')}`;
-document.getElementById('stat-malzeme-kasa').innerText = `₺${malzemeGelir.toLocaleString('tr-TR')}`;
-
-document.getElementById('kasa-ay-ozet').innerHTML = `Seçilen Ay Özeti (${month}): <strong class="text-green-400">Toplam Gelir: ₺${income.toLocaleString('tr-TR')}</strong> · <strong class="text-cyan-400">Malzeme Kasası: ₺${malzemeGelir.toLocaleString('tr-TR')}</strong> · <strong class="text-red-400">Gider: ₺${expense.toLocaleString('tr-TR')}</strong> · Net: <strong class="text-white">₺${ayNetBakiye.toLocaleString('tr-TR')}</strong>`;
+document.getElementById('kasa-ay-ozet').innerHTML = `Seçilen Ay Özeti: <strong class="text-green-400">Gelir: ₺${income.toLocaleString('tr-TR')}</strong> · <strong class="text-red-400">Gider: ₺${expense.toLocaleString('tr-TR')}</strong> · Net: <strong class="text-white">₺${ayNetBakiye.toLocaleString('tr-TR')}</strong>`;
 
 renderKasa(movements);
 }
@@ -1213,14 +1410,13 @@ function renderKasa(list) {
 const tbody = document.getElementById('kasa-listesi');
 tbody.innerHTML = '';
 if (list.length === 0) {
-tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-500">Seçilen ayda kasa hareketi bulunamadı. (Sağ üstteki ay seçim kutusundan geçmiş ayları seçebilirsiniz)</td></tr>`;
+tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-500">Kriterlere uygun kasa hareketi bulunamadı.</td></tr>`;
 return;
 }
 list.forEach(k => {
 const isGelir = k.tip === 'Gelir';
-const isMalzeme = k.kategori === 'Malzeme Kasası';
-const badge = isGelir ? (isMalzeme ? '<span class="bg-cyan-950 text-cyan-400 border border-cyan-800 px-2 py-0.5 rounded text-[10px] font-bold">Malzeme Kasası</span>' : '<span class="bg-green-950 text-green-400 border border-green-800 px-2 py-0.5 rounded text-[10px] font-bold">Gelir</span>') : '<span class="bg-red-950 text-red-400 border border-red-800 px-2 py-0.5 rounded text-[10px] font-bold">Gider</span>';
-const tutarClass = isGelir ? (isMalzeme ? 'text-cyan-400' : 'text-green-400') : 'text-red-400';
+const badge = isGelir ? '<span class="bg-green-950 text-green-400 border border-green-800 px-2 py-0.5 rounded text-[10px] font-bold">Gelir</span>' : '<span class="bg-red-950 text-red-400 border border-red-800 px-2 py-0.5 rounded text-[10px] font-bold">Gider</span>';
+const tutarClass = isGelir ? 'text-green-400' : 'text-red-400';
 const tutarSign = isGelir ? '+' : '-';
 
 tbody.innerHTML += `
@@ -1261,6 +1457,47 @@ async function deleteKasa(id) {
 if(!confirm('Bu kasa hareketini silmek istediğinize emin misiniz?')) return;
 await supabaseClient.from('kasa_hareketleri').delete().eq('id', id);
 loadData();
+}
+
+// --- EXCEL DIŞA AKTARMA (CSV MANTIGI) ---
+function exportUyelerExcel() {
+if (allUyeler.length === 0) { alert('Aktarılacak üye verisi bulunamadı.'); return; }
+
+let csvContent = "\uFEFFAd Soyad;Telefon;Paket;Ucret;Borc Tutar;Kalan Seans;Bitis Tarihi;Durum\n";
+allUyeler.forEach(u => {
+const total = u.total_lessons || 12;
+let sessionDates = [];
+try { sessionDates = typeof u.session_dates === 'string' ? JSON.parse(u.session_dates) : (u.session_dates || []); } catch(e) { sessionDates = []; }
+const completed = sessionDates.filter(d => d !== null && d !== undefined && d !== '').length;
+const remaining = Math.max(0, total - completed);
+
+csvContent += `"${u.ad_soyad || ''}";"${u.telefon || ''}";"${u.paket || ''}";"${u.ucret || 0}";"${u.borc_tutar || 0}";"${remaining}";"${u.bitis_tarihi || ''}";"${u.durum || ''}"\n`;
+});
+
+downloadCSV(csvContent, `harder_army_uyeler_${localDateISO()}.csv`);
+}
+
+function exportKasaExcel() {
+if (allKasa.length === 0) { alert('Aktarılacak kasa verisi bulunamadı.'); return; }
+
+let csvContent = "\uFEFFTarih;Islem Turu;Baslik;Kategori;Tutar\n";
+allKasa.forEach(k => {
+csvContent += `"${k.tarih || ''}";"${k.tip || ''}";"${k.baslik || ''}";"${k.kategori || ''}";"${k.tutar || 0}"\n`;
+});
+
+downloadCSV(csvContent, `harder_army_kasa_${localDateISO()}.csv`);
+}
+
+function downloadCSV(content, fileName) {
+const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+const link = document.createElement("a");
+const url = URL.createObjectURL(blob);
+link.setAttribute("href", url);
+link.setAttribute("download", fileName);
+link.style.visibility = 'hidden';
+document.body.appendChild(link);
+link.click();
+document.body.removeChild(link);
 }
 
 // --- SEANS PENCERESİ VE TARİH SEÇİMİ ---
