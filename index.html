@@ -412,7 +412,7 @@ Giriş Yap & Seanslarımı Gör
 <!-- MODAL: UYGULAMA İÇİ SALON QR TARAMA -->
 <div id="attendance-qr-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[70] flex items-center justify-center p-4 hidden">
 <div class="bg-zinc-900 border border-yellow-700/60 w-full max-w-sm rounded-2xl p-5 text-center space-y-4">
-<div class="flex justify-between items-center"><h3 class="text-sm font-bold text-yellow-400">Salon QR Kodunu Tara</h3><button onclick="stopAttendanceQrScan()" class="text-gray-300 text-xl" aria-label="Tarayıcıyı kapat">×</button></div>
+<div class="flex justify-between items-center"><h3 class="text-sm font-bold text-yellow-400">Salon QR Kodunu Tara</h3><button onclick="stopAttendanceQrScan()" class="text-gray-300 text-xl" aria-label="Tarayıcılıkapat">×</button></div>
 <p id="attendance-qr-status" class="text-xs text-gray-400">Kamerayı salon QR koduna yöneltin.</p>
 <div id="attendance-qr-reader" class="overflow-hidden rounded-xl"></div>
 <button onclick="stopAttendanceQrScan()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white py-2.5 rounded-xl text-xs font-bold">Vazgeç</button>
@@ -663,7 +663,7 @@ try { return JSON.parse(atob(key.split('.')[1].replace(/-/g, '+').replace(/_/g, 
 function saveConfig() {
 let url = document.getElementById('sb-url').value.trim();
 let key = document.getElementById('sb-key').value.trim();
-if(!url || !key) { alert('Lütfen URL ve Key alanlarını doldurun!'); return; }
+if(!url || !key) { alert('Lütfen URL and Key alanlarını doldurun!'); return; }
 if (!isClientSafeKey(key)) { alert('Service role/secret anahtarını tarayıcıda kullanmayın.'); return; }
 localStorage.setItem('sb_url', url);
 localStorage.setItem('sb_key', key);
@@ -1014,10 +1014,11 @@ else if (!telClean.startsWith('90') && telClean.length === 10) telClean = '90' +
 
 const waGenel = encodeURIComponent(`Harder Army MMA: Osu! Merhaba ${u.ad_soyad}, ${u.paket} seans ve üyelik durumunuz hakkında bilgi vermek istedik. Salonumuza bekleriz! 🥋`);
 const waSeansBitiyor = encodeURIComponent(`Harder Army MMA: Osu! Merhaba ${u.ad_soyad}, paketindeki derslerin tamamlanmak üzere (Kalan: ${remaining} seans). Yeni dönem kaydın için görüşelim! 🥋`);
-const waBorc = encodeURIComponent(`Harder Army MMA: Osu! Merhaba ${u.ad_soyad}, salon üyeliğine ait ₺${(Number(u.borc_tutar) || 0).toLocaleString('tr-TR')} kalan aidat/bakiye ödemen bulunmaktadır. Detaylı bilgi için salonumuza ulaşabilirsin. 🥋`);
+const borcTutar = Number(u.borc_tutar) || 0;
+const waBorc = encodeURIComponent(`Harder Army MMA: Osu! Merhaba ${u.ad_soyad}, salon üyeliğine ait ₺${borcTutar.toLocaleString('tr-TR')} kalan aidat/bakiye ödemen bulunmaktadır. Detaylı bilgi için salonumuza ulaşabilirsin. 🥋`);
 
 let aktifWaMsg = waGenel;
-if ((Number(u.borc_tutar) || 0) > 0) aktifWaMsg = waBorc;
+if (borcTutar > 0) aktifWaMsg = waBorc;
 else if (remaining <= 2) aktifWaMsg = waSeansBitiyor;
 
 const remainingBadge = remaining <= 2
@@ -1032,7 +1033,7 @@ ${escapeHtml(u.telefon || '-')}
 ${telClean ? `
 <div class="flex flex-wrap gap-1 mt-1">
 <a href="https://wa.me/${telClean}?text=${aktifWaMsg}" target="_blank" class="bg-zinc-800 hover:bg-zinc-700 text-green-400 px-2 py-0.5 rounded text-[10px] font-bold border border-zinc-700" title="Genel Mesaj"><i class="fa-brands fa-whatsapp mr-1"></i>WhatsApp</a>
-${(Number(u.borc_tutar) || 0) > 0 ? `<a href="https://wa.me/${telClean}?text=${waBorc}" target="_blank" class="bg-red-950 hover:bg-red-900 text-red-400 px-2 py-0.5 rounded text-[10px] font-bold border border-red-800" title="Borç Hatırlat">Borç</a>` : ''}
+${borcTutar > 0 ? `<a href="https://wa.me/${telClean}?text=${waBorc}" target="_blank" class="bg-red-950 hover:bg-red-900 text-red-400 px-2 py-0.5 rounded text-[10px] font-bold border border-red-800" title="Borç Hatırlat">Borç</a>` : ''}
 </div>` : ''}
 </td>
 <td class="p-3.5"><span class="bg-zinc-800 px-2 py-1 rounded text-[11px] text-gray-300">${escapeHtml(u.paket)}</span></td>
@@ -1044,7 +1045,7 @@ ${(Number(u.borc_tutar) || 0) > 0 ? `<a href="https://wa.me/${telClean}?text=${w
 </td>
 <td class="p-3.5 font-semibold text-green-400">
 ₺${u.ucret}
-${(Number(u.borc_tutar) || 0) > 0 ? `<div class="text-[10px] text-red-500 font-bold">Borç: ₺${Number(u.borc_tutar).toLocaleString('tr-TR')}</div>` : ''}
+${borcTutar > 0 ? `<div class="text-[10px] text-red-500 font-bold">Borç: ₺${borcTutar.toLocaleString('tr-TR')}</div>` : ''}
 </td>
 <td class="p-3.5 text-gray-400">${escapeHtml(u.bitis_tarihi || '-')}</td>
 <td class="p-3.5"><span class="px-2 py-0.5 rounded border text-[10px] font-bold ${badgeClass}">${escapeHtml(u.durum)}</span></td>
@@ -1192,7 +1193,6 @@ if (id) {
 response = await supabaseClient.from('uyeler').update(payload).eq('id', id);
 } else {
 payload.baslangic_tarihi = localDateISO();
-payload.session_dates = JSON.stringify([]);
 response = await supabaseClient.from('uyeler').insert([payload]);
 if (!response.error && borcTutar === 0) {
 await supabaseClient.from('kasa_hareketleri').insert([{
@@ -1209,7 +1209,7 @@ closeUyeModal();
 loadData();
 }
 
-// --- STOK / EKİPMAN MODÜLÜ ---
+// --- DÜZELTİLEN STOK / EKİPMAN MODÜLÜ ---
 async function loadStok() {
 if (!supabaseClient) return;
 const { data, error } = await supabaseClient.from('stok_urunler').select('*').order('created_at', { ascending: false });
@@ -1246,42 +1246,90 @@ function closeStokModal() { document.getElementById('stok-modal').classList.add(
 
 async function saveStok(e) {
 e.preventDefault();
+if (!supabaseClient) { alert('Veritabanı bağlantısı yok.'); return; }
+
+const urunAdi = document.getElementById('s-ad').value.trim();
+const kategori = document.getElementById('s-kategori').value;
+const satisFiyati = Number(document.getElementById('s-fiyat').value);
+const adet = Number(document.getElementById('s-adet').value);
+
+if (!urunAdi || isNaN(satisFiyati) || isNaN(adet)) {
+alert('Lütfen tüm alanları geçerli değerlerle doldurun.');
+return;
+}
+
 const payload = {
-urun_adi: document.getElementById('s-ad').value,
-kategori: document.getElementById('s-kategori').value,
-satis_fiyati: Number(document.getElementById('s-fiyat').value),
-adet: Number(document.getElementById('s-adet').value)
+urun_adi: urunAdi,
+kategori: kategori,
+satis_fiyati: satisFiyati,
+adet: adet
 };
+
 const { error } = await supabaseClient.from('stok_urunler').insert([payload]);
-if (error) { alert('Hata: ' + error.message); return; }
+if (error) {
+alert('Ürün eklenemedi: ' + error.message);
+return;
+}
+
+document.getElementById('stok-form').reset();
 closeStokModal();
 loadStok();
 }
 
 async function urunSat(id) {
-const product = allStok.find(item => item.id == id);
-if (!product) return;
-if (product.adet <= 0) { alert('Bu ürünün stoğu kalmadı!'); return; }
+if (!supabaseClient) { alert('Veritabanı bağlantısı yok.'); return; }
+const product = allStok.find(item => String(item.id) === String(id));
+if (!product) { alert('Ürün bulunamadı!'); return; }
+
+if (Number(product.adet) <= 0) {
+alert('Bu ürünün stoğu kalmadı!');
+return;
+}
+
 if (!confirm(`"${product.urun_adi}" ürününden 1 adet satılacak (₺${product.satis_fiyati}). Kasa gelirine işlensin mi?`)) return;
 
-const yeniAdet = product.adet - 1;
-await supabaseClient.from('stok_urunler').update({ adet: yeniAdet }).eq('id', id);
+const yeniAdet = Number(product.adet) - 1;
 
-await supabaseClient.from('kasa_hareketleri').insert([{
+// 1. Stok Adedini Güncelle
+const { error: updateError } = await supabaseClient
+.from('stok_urunler')
+.update({ adet: yeniAdet })
+.eq('id', product.id);
+
+if (updateError) {
+alert('Stok güncellenirken hata oluştu: ' + updateError.message);
+return;
+}
+
+// 2. Kasaya Gelir Ekle
+const { error: kasaError } = await supabaseClient
+.from('kasa_hareketleri')
+.insert([{
 tip: 'Gelir',
 baslik: `Ürün Satışı: ${product.urun_adi}`,
-tutar: product.satis_fiyati,
+tutar: Number(product.satis_fiyati),
 kategori: 'Malzeme / Ekipman',
 tarih: localDateISO()
 }]);
 
-alert('Ürün satışı gerçekleştirildi ve kasaya gelir olarak işlendi! Osu! 🥋');
+if (kasaError) {
+alert('Ürün stoktan düşüldü ancak kasaya işlenirken hata oluştu: ' + kasaError.message);
+} else {
+alert('Ürün satışı başarıyla gerçekleştirildi ve kasaya gelir olarak işlendi! Osu! 🥋');
+}
+
 loadData();
 }
 
 async function deleteStok(id) {
-if(!confirm('Bu ürünü silmek istediğinize emin misiniz?')) return;
-await supabaseClient.from('stok_urunler').delete().eq('id', id);
+if (!supabaseClient) { alert('Veritabanı bağlantısı yok.'); return; }
+if (!confirm('Bu ürünü silmek istediğinize emin misiniz?')) return;
+
+const { error } = await supabaseClient.from('stok_urunler').delete().eq('id', id);
+if (error) {
+alert('Ürün silinemedi: ' + error.message);
+return;
+}
 loadStok();
 }
 
@@ -1349,7 +1397,7 @@ const bugun = localDateISO();
 const bugunHareketler = allKasa.filter(k => String(k.tarih || '').startsWith(bugun));
 
 if (bugunHareketler.length === 0) {
-alert('Bugüne ait hiçbir kasa hareketi yok.');
+alert('Bugüne ait henüz hiçbir kasa hareketi yok.');
 return;
 }
 
@@ -1357,7 +1405,11 @@ const gunlukGelir = bugunHareketler.filter(k => k.tip === 'Gelir').reduce((a, b)
 const gunlukGider = bugunHareketler.filter(k => k.tip === 'Gider').reduce((a, b) => a + Number(b.tutar), 0);
 const gunlukNet = gunlukGelir - gunlukGider;
 
-alert(`--- GÜNLÜK KASA KAPANIS ÖZETİ (${bugun}) ---\n\nToplam Günlük Gelir: ₺${gunlukGelir.toLocaleString('tr-TR')}\nToplam Günlük Gider: ₺${gunlukGider.toLocaleString('tr-TR')}\nGünlük Net Bakiye: ₺${gunlukNet.toLocaleString('tr-TR')}\n\nKasa Kapanışı Onaylandı. Osu! 🥋`);
+const onay = confirm(`--- GÜNLÜK KASA KAPANIS ÖZETİ (${bugun}) ---\n\nToplam Günlük Gelir: ₺${gunlukGelir.toLocaleString('tr-TR')}\nToplam Günlük Gider: ₺${gunlukGider.toLocaleString('tr-TR')}\nGünlük Net Bakiye: ₺${gunlukNet.toLocaleString('tr-TR')}\n\nKasa Kapanışı Onaylansın mı?`);
+
+if (onay) {
+alert(`Günlük Kasa Kapanışı Tamamlandı! Günlük Net Devir: ₺${gunlukNet.toLocaleString('tr-TR')}. Osu! 🥋`);
+}
 }
 
 function renderKasaAySecenekleri() {
@@ -1447,8 +1499,10 @@ await supabaseClient.from('kasa_hareketleri').delete().eq('id', id);
 loadData();
 }
 
+// --- EXCEL DIŞA AKTARMA (CSV MANTIGI) ---
 function exportUyelerExcel() {
 if (allUyeler.length === 0) { alert('Aktarılacak üye verisi bulunamadı.'); return; }
+
 let csvContent = "\uFEFFAd Soyad;Telefon;Paket;Ucret;Borc Tutar;Kalan Seans;Bitis Tarihi;Durum\n";
 allUyeler.forEach(u => {
 const total = u.total_lessons || 12;
@@ -1456,17 +1510,21 @@ let sessionDates = [];
 try { sessionDates = typeof u.session_dates === 'string' ? JSON.parse(u.session_dates) : (u.session_dates || []); } catch(e) { sessionDates = []; }
 const completed = sessionDates.filter(d => d !== null && d !== undefined && d !== '').length;
 const remaining = Math.max(0, total - completed);
+
 csvContent += `"${u.ad_soyad || ''}";"${u.telefon || ''}";"${u.paket || ''}";"${u.ucret || 0}";"${u.borc_tutar || 0}";"${remaining}";"${u.bitis_tarihi || ''}";"${u.durum || ''}"\n`;
 });
+
 downloadCSV(csvContent, `harder_army_uyeler_${localDateISO()}.csv`);
 }
 
 function exportKasaExcel() {
 if (allKasa.length === 0) { alert('Aktarılacak kasa verisi bulunamadı.'); return; }
+
 let csvContent = "\uFEFFTarih;Islem Turu;Baslik;Kategori;Tutar\n";
 allKasa.forEach(k => {
 csvContent += `"${k.tarih || ''}";"${k.tip || ''}";"${k.baslik || ''}";"${k.kategori || ''}";"${k.tutar || 0}"\n`;
 });
+
 downloadCSV(csvContent, `harder_army_kasa_${localDateISO()}.csv`);
 }
 
